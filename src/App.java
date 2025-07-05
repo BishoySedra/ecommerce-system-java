@@ -47,6 +47,7 @@ public class App {
         System.out.println("Subtotal: $" + subtotal);
         System.out.println("Shipping Fees: $" + shippingFees);
         System.out.println("Amount: $" + total);
+        System.out.println("Balance left: $" + customer.getBalance());
     }
 
     public static void main(String[] args) throws Exception {
@@ -67,11 +68,11 @@ public class App {
     public static void testCase1() {
         System.out.println("=== Test Case 1: Normal checkout with valid products ===");
         try {
-            Product cheese = new PossibleExpiredProduct("Cheese", 100, 5,
+            Product cheese = new PerishableProduct("Cheese", 100, 5,
                     new Date(System.currentTimeMillis() + 86400000),
                     0.2);
-            Product tv = new NonPossibleExpiredProduct("TV", 300, 2, true, 5);
-            Product scratchCard = new NonPossibleExpiredProduct("Scratch Card", 50, 10, false, 0);
+            Product tv = new NonPerishableProduct("TV", 300, 2, true, 5);
+            Product scratchCard = new NonPerishableProduct("Scratch Card", 50, 10, false, 0);
             Customer customer = new Customer("Ahmed", 1000);
 
             Cart cart = new Cart();
@@ -89,7 +90,7 @@ public class App {
     public static void testCase2() {
         System.out.println("\n=== Test Case 2: Product is expired ===");
         try {
-            Product cheese = new PossibleExpiredProduct("Cheese", 100, 5, new Date(System.currentTimeMillis() - 1000),
+            Product cheese = new PerishableProduct("Cheese", 100, 5, new Date(System.currentTimeMillis() - 1000),
                     0.2);
             Customer customer = new Customer("Laila", 500);
             Cart cart = new Cart();
@@ -104,7 +105,7 @@ public class App {
     public static void testCase3() {
         System.out.println("\n=== Test Case 3: Quantity exceeds stock ===");
         try {
-            Product tv = new NonPossibleExpiredProduct("TV", 300, 2, true, 5);
+            Product tv = new NonPerishableProduct("TV", 300, 2, true, 5);
             Customer customer = new Customer("Omar", 1000);
             Cart cart = new Cart();
             cart.add(tv, 3); // exceeds available quantity
@@ -130,7 +131,7 @@ public class App {
     public static void testCase5() {
         System.out.println("\n=== Test Case 5: Insufficient balance ===");
         try {
-            Product laptop = new NonPossibleExpiredProduct("Laptop", 900, 2, true, 3);
+            Product laptop = new NonPerishableProduct("Laptop", 900, 2, true, 3);
             Customer customer = new Customer("Mona", 500); // not enough
             Cart cart = new Cart();
             cart.add(laptop, 1);
@@ -144,7 +145,7 @@ public class App {
     public static void testCase6() {
         System.out.println("\n=== Test Case 6: Digital-only products, no shipping required ===");
         try {
-            Product scratchCard = new NonPossibleExpiredProduct("Scratch Card", 50, 20, false, 0);
+            Product scratchCard = new NonPerishableProduct("Scratch Card", 50, 20, false, 0);
             Customer customer = new Customer("Nour", 500);
             Cart cart = new Cart();
             cart.add(scratchCard, 5);
@@ -159,9 +160,9 @@ public class App {
     public static void testCase7() {
         System.out.println("\n=== Test Case 7: Multiple shippable items with weight ===");
         try {
-            Product biscuits = new PossibleExpiredProduct("Biscuits", 150, 5,
+            Product biscuits = new PerishableProduct("Biscuits", 150, 5,
                     new Date(System.currentTimeMillis() + 86400000), 0.7);
-            Product tv = new NonPossibleExpiredProduct("TV", 300, 3, true, 5);
+            Product tv = new NonPerishableProduct("TV", 300, 3, true, 5);
             Customer customer = new Customer("Karim", 2000);
 
             Cart cart = new Cart();
@@ -178,7 +179,7 @@ public class App {
     public static void testCase8() {
         System.out.println("\n=== Test Case 8: Stock reduced after successful checkout ===");
         try {
-            Product cheese = new PossibleExpiredProduct("Cheese", 100, 3,
+            Product cheese = new PerishableProduct("Cheese", 100, 3,
                     new Date(System.currentTimeMillis() + 86400000),
                     0.2);
             Customer customer1 = new Customer("Ali", 1000);
@@ -242,11 +243,11 @@ abstract class Product {
     public abstract boolean isShippable();
 }
 
-class PossibleExpiredProduct extends Product implements Shippable {
+class PerishableProduct extends Product implements Shippable {
     private Date expiryDate;
     private double weight;
 
-    public PossibleExpiredProduct(String name, double price, int quantity, Date expiryDate, double weight) {
+    public PerishableProduct(String name, double price, int quantity, Date expiryDate, double weight) {
         super(name, price, quantity);
         this.expiryDate = expiryDate;
         this.weight = weight;
@@ -274,13 +275,13 @@ class PossibleExpiredProduct extends Product implements Shippable {
 
 }
 
-class NonPossibleExpiredProduct extends Product implements Shippable {
-    private boolean isPerishable;
+class NonPerishableProduct extends Product implements Shippable {
+    private boolean shippingRequired;
     private double weight;
 
-    public NonPossibleExpiredProduct(String name, double price, int quantity, boolean isPerishable, double weight) {
+    public NonPerishableProduct(String name, double price, int quantity, boolean shippingRequired, double weight) {
         super(name, price, quantity);
-        this.isPerishable = isPerishable;
+        this.shippingRequired = shippingRequired;
         this.weight = weight;
     }
 
@@ -291,7 +292,7 @@ class NonPossibleExpiredProduct extends Product implements Shippable {
 
     @Override
     public boolean isShippable() {
-        return isPerishable; // Non-perishable products can always be shipped
+        return shippingRequired; // Non-perishable products can always be shipped
     }
 
     @Override
@@ -327,6 +328,10 @@ class Customer {
             throw new RuntimeException("Insufficient balance for customer: " + name);
         }
         balance -= amount;
+    }
+
+    public double getBalance() {
+        return balance;
     }
 }
 
