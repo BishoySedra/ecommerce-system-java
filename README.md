@@ -1,14 +1,13 @@
-# 🛒 Fawry Rise E-Commerce System – Internship Challenge
+# 🛒 E-Commerce System
 
-A console-based Java implementation of an e-commerce system designed as part of the **Fawry Rise Quantum Internship Full Stack Development Challenge**.  
-This project demonstrates strong object-oriented design, and error handling.
+A console-based Java implementation of an e-commerce system. This project demonstrates strong object-oriented design, and error handling.
 
 ---
 
 ## 🚀 Features
 
 - 🧾 **Product Management**  
-  - Shippable and Expired product types  
+  - Perishable and Non-Perishable product types  
   - Shipping-required and digital products  
   - Expiry tracking, weight, and stock management
 
@@ -30,7 +29,7 @@ This project demonstrates strong object-oriented design, and error handling.
 
 - 📦 **Shipping Service**  
   - Collects names and weights  
-  - Outputs readable shipping notice
+  - Outputs readable shipping slip
 
 ---
 
