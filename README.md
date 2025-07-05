@@ -45,7 +45,7 @@ All functionalities and edge cases are fully tested through console output:
 - ✔️ Weight aggregation across shippable items
 - ✔️ Stock update across repeated checkouts
 
-> See `Main.java` for organized test cases (`testCase1()` to `testCase8()`).
+> See `src/App.java` for organized test cases (`testCase1()` to `testCase8()`).
 
 ---
 
