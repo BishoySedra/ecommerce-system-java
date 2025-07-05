@@ -394,7 +394,7 @@ class Cart {
         double shippingFees = 0.0;
         for (CartItem item : items) {
             if (item.requireShipping()) {
-                shippingFees += 10.0; // Assuming a flat shipping fee of $10 per shippable item
+                shippingFees += 10.0 * item.quantity; // Flat rate shipping fee of $10 per item
             }
         }
         return shippingFees;
