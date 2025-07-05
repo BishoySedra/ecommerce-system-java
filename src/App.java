@@ -40,6 +40,26 @@ public class App {
     }
 }
 
+interface ShippableItem {
+    String getName();
+
+    double getWeight();
+}
+
+class ShippingService {
+    public static void processShippableItems(List<ShippableItem> items) {
+        System.out.println(" ** Shipment notice ** ");
+        double totalWeight = 0.0;
+
+        for (ShippableItem item : items) {
+            System.out.println("Item: " + item.getName() + ", Weight: " + item.getWeight() + "kg");
+            totalWeight += item.getWeight();
+        }
+
+        System.out.println("Total package weight: " + totalWeight + "kg");
+    }
+}
+
 class Customer {
     private String name;
     private double balance;
@@ -225,18 +245,24 @@ class Checkout {
         // Deduct the total cost from the customer's balance
         customer.setBalance(customerBalance - totalCost);
 
-        System.out.println(" ** Shipment notice ** ");
-        List<Product> shippableProducts = cart.getShippableProducts();
-        double totalWeight = 0.0;
-        double shippingFees = 0.0;
-        // Loop through shippable products and print their details
-        for (Product product : shippableProducts) {
-            double weight = product.getWeight() != null ? product.getWeight() : 0.0;
-            System.out.println(product.getQuantity() + "x " + product.getName() + "     " + weight + "g");
-            totalWeight += weight * product.getQuantity();
-            shippingFees += 10.0; // Assuming a constant shipping fee of 10.0 per shippable product
+        List<ShippableItem> shippableItems = new ArrayList<>();
+        for (Product product : cart.getShippableProducts()) {
+            shippableItems.add(new ShippableItem() {
+                @Override
+                public String getName() {
+                    return product.getName();
+                }
+
+                @Override
+                public double getWeight() {
+                    return product.getWeight() != null ? product.getWeight() : 0.0;
+                }
+            });
         }
-        System.out.println("Total package weight: " + totalWeight + "g");
+
+        if (!shippableItems.isEmpty()) {
+            ShippingService.processShippableItems(shippableItems);
+        }
 
         System.out.println(" ** Checkout receipt ** ");
         for (Product product : cart.getProducts()) {
@@ -244,6 +270,7 @@ class Checkout {
         }
         System.out.println("----------------------");
         System.out.println("Subtotal     " + totalCost);
+        double shippingFees = shippableItems.isEmpty() ? 0.0 : shippableItems.size() * 10.0;
         System.out.println("Shipping fees     " + shippingFees);
         System.out.println("Amount     " + (totalCost + shippingFees));
     }
