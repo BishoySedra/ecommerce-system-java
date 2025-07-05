@@ -409,7 +409,8 @@ class ShippingService {
     public static void ship(List<Shippable> items, List<Integer> quantities) {
         System.out.println("** Shipment notice **");
         double totalWeight = 0.0;
-        for (int i = 0; i < items.size(); i++) {
+        int itemsCount = items.size();
+        for (int i = 0; i < itemsCount; i++) {
             Shippable item = items.get(i);
             int quantity = quantities.get(i);
             double weight = item.getWeight() * quantity;
